@@ -55,8 +55,14 @@ foreach ($requests as $request) {
     $methodname = clean_param($request['methodname'], PARAM_ALPHANUMEXT);
     $index = clean_param($request['index'], PARAM_INT);
     $args = $request['args'];
-
-    $response = external_api::call_external_function($methodname, $args, true);
+    
+    try {
+        $response = external_api::call_external_function($methodname, $args, true);
+    } catch(Exception $e) {
+        unset($args['lang']); // use the system default language
+        $response = external_api::call_external_function($methodname, $args, true);
+    }
+    
     $responses[$index] = $response;
     if ($response['error']) {
         // Do not process the remaining requests.
