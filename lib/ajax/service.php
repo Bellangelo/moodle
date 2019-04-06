@@ -56,6 +56,15 @@ foreach ($requests as $request) {
     $index = clean_param($request['index'], PARAM_INT);
     $args = $request['args'];
 
+    if ($args['lang'] != "") {
+        // Check if specific language exists.
+        // If not, use system default.
+        if (!get_string_manager()->translation_exists($args['lang'], false)) {
+            $args['lang'] = core_user::get_property_default('lang');
+        }
+
+    }
+    
     $response = external_api::call_external_function($methodname, $args, true);
     $responses[$index] = $response;
     if ($response['error']) {
